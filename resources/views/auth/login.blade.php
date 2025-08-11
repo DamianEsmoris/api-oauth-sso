@@ -16,5 +16,11 @@
         <input placeholder="password" name="password" />
         <input type="submit" />
     </form>
+
+    <form method="POST" action="{{ url('/login') }}">
+        @csrf
+        <input type="submit" value="logout"/>
+    </form>
+    <a href="/register">create a new account</a>
 </body>
 </html>
