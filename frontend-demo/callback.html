@@ -1,0 +1,71 @@
+<style>
+* {
+    max-width: 600px;
+}
+code {
+    overflow-wrap: break-word;
+}
+</style>
+
+<div>
+    <h1>Comes from the back</h1>
+    <code id="code"></code>
+</div>
+
+<div>
+    <h1>Validate code</h1>
+    <button onclick="validateCode()">validate</button>
+    <div id="validationOutput"></div>
+</div>
+
+<form method="get" action="http://localhost:8000/logout">
+    <input name="redirect_uri" value="http://localhost:8001" readonly hidden />
+    <input type="submit" value="logout"/>
+</div>
+
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+
+    if (!code) 
+        window.location = '/'
+
+
+    const pre = document.getElementById('code');
+    pre.textContent = code;
+
+    const CLIENT_ID = '0198991b-750c-70b1-9b08-38b6ed772b28';
+    const CLIENT_SECRET = 'IDdZm6qGfBwKx5qlXcTaFDDFMtFO3HOvtWFEO3Fl';
+    const FETCH_HEADERS = { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    };
+
+    const validationOutput = document.getElementById('validationOutput');
+    async function validateCode() {
+        const res = await fetch('http://localhost:8000/oauth/token', {
+            ...FETCH_HEADERS,
+            body: JSON.stringify({
+                grant_type: 'authorization_code',
+                client_id: CLIENT_ID,
+                client_secret: CLIENT_SECRET,
+                redirect_uri: 'http://localhost:8001/callback.html',
+                code
+            })
+        })
+        if (!res.ok)
+            return validationOutput.innerHTML = '<br/>invalid<br/><button onClick=goBack()>revalidate now</button>';
+        const data = await res.json();
+        if ('error' in data)
+            return validationOutput.innerHTML = 'Invalid<br/><button onClick=goBack()>revalidate now</button>'
+        validationOutput.innerHTML = `<code>${JSON.stringify(data)}</code>`;
+
+    }
+
+    function goBack() {
+        history.back();
+    }
+</script>
