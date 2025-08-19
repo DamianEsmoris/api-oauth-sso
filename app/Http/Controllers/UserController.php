@@ -16,4 +16,9 @@ class UserController extends Controller
         $user->password = Hash::make($request->post("password"));
         $user->save();
     }
+
+    public function ValidateToken(Request $request)
+    {
+        return auth('api')->user();
+    }
 }
